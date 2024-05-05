@@ -4,7 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js",
+    "db-create": "sequelize db:create",
+    "db-drop": "sequelize db:drop",
+    "db-migrate": "sequelize db:migrate",
+    "db-undo-migrate": "sequelize db:migrate:undo:all",
+    "db-seed": "sequelize db:seed:all",
+    "db-undo-seed": "sequelize db:seed:undo:all"
   },
   "author": "",
   "license": "ISC",
@@ -12,8 +19,12 @@
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "morgan": "^1.10.0",
+    "mysql2": "^3.9.6",
     "nodemon": "^3.1.0",
     "pg": "^8.11.5",
-    "sequelize": "^6.37.3"
+    "sequelize": "^6.37.3",
+    "uuid": "^9.0.1",
+    "uuidv4": "^6.2.13",
+    "validator": "^13.11.0"
   }
 }
