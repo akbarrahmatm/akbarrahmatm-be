@@ -1,5 +1,6 @@
 const ApiError = require("../utils/ApiError");
 const { project, user } = require("../models");
+const validator = require("validator");
 const { Op } = require("sequelize");
 
 const getAllProject = async (req, res, next) => {
@@ -49,6 +50,39 @@ const getAllProject = async (req, res, next) => {
   }
 };
 
+const getProjectBySlug = async (req, res, next) => {
+  try {
+    const slug = req.params.slug;
+
+    if (validator.isSlug(slug)) {
+      const projectData = await project.findOne({
+        where: {
+          project_slug: slug,
+        },
+        include: [
+          {
+            model: user,
+            attributes: ["username", "name"],
+            as: "user_detail",
+          },
+        ],
+      });
+
+      res.status(200).json({
+        status: "Success",
+        requestAt: req.requestTime,
+        message: "Project data successfully retrieved",
+        data: { project: projectData },
+      });
+    } else {
+      return next(new ApiError("Slug format is not valid", 400));
+    }
+  } catch (err) {
+    return next(new ApiError(err.message, 400));
+  }
+};
+
 module.exports = {
   getAllProject,
+  getProjectBySlug,
 };

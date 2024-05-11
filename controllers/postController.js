@@ -41,24 +41,20 @@ const getAllPost = async (req, res, next) => {
 
     const totalPages = Math.ceil(totalCount / pageSize);
 
-    if (posts && posts.length > 0) {
-      res.status(200).json({
-        status: "Success",
-        requestAt: req.requestTime,
-        message: "Post data successfully retrieved",
-        data: {
-          posts,
-        },
-        pagination: {
-          totalData: totalCount,
-          totalPages,
-          pageNum,
-          pageSize,
-        },
-      });
-    } else {
-      return next(new ApiError("Data not found", 404));
-    }
+    res.status(200).json({
+      status: "Success",
+      requestAt: req.requestTime,
+      message: "Post data is successfully retrieved",
+      data: {
+        posts,
+      },
+      pagination: {
+        totalData: totalCount,
+        totalPages,
+        pageNum,
+        pageSize,
+      },
+    });
   } catch (err) {
     return next(new ApiError(err.message, 400));
   }
@@ -68,35 +64,35 @@ const getPostBySlug = async (req, res, next) => {
   try {
     const slug = req.params.slug;
 
-    const postData = await post.findOne({
-      where: {
-        post_slug: slug,
-      },
-      include: [
-        {
-          model: category,
-          attributes: ["category", "slug_category"],
-          as: "category_detail",
+    if (validator.isSlug(slug)) {
+      const postData = await post.findOne({
+        where: {
+          post_slug: slug,
         },
-        {
-          model: user,
-          attributes: ["username", "name"],
-          as: "user_detail",
-        },
-      ],
-    });
+        include: [
+          {
+            model: category,
+            attributes: ["category", "slug_category"],
+            as: "category_detail",
+          },
+          {
+            model: user,
+            attributes: ["username", "name"],
+            as: "user_detail",
+          },
+        ],
+      });
 
-    if (postData) {
       res.status(200).json({
         status: "Success",
         requestAt: req.requestTime,
-        message: `Post data is successfully retrieved`,
+        message: "Post data is successfully retrieved",
         data: {
           post: postData,
         },
       });
     } else {
-      return next(new ApiError("Data not found", 404));
+      return next(new ApiError("Slug format is not valid", 400));
     }
   } catch (err) {
     return next(new ApiError(err.message, 400));
@@ -136,18 +132,14 @@ const getPostByCategory = async (req, res, next) => {
         },
       });
 
-      if (posts) {
-        res.status(200).json({
-          status: "Success",
-          requestAt: req.requestTime,
-          message: `Post data with category: '${categoryData.category}' is successfully retrieved`,
-          data: {
-            posts,
-          },
-        });
-      } else {
-        return next(new ApiError("Data not found", 404));
-      }
+      res.status(200).json({
+        status: "Success",
+        requestAt: req.requestTime,
+        message: `Post data with category: '${categoryData.category}' is successfully retrieved`,
+        data: {
+          posts,
+        },
+      });
     } else {
       return next(new ApiError("Slug format is not valid", 400));
     }
